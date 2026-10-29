@@ -244,3 +244,5 @@ cp .maestro/staging.env.example .maestro/staging.env   # fill in a staging selle
 maestro test .maestro/phase0 --env-file .maestro/staging.env
 maestro test .maestro/phase2 --env-file .maestro/staging.env
 ```
+#   t r a d e v i s t a r - s e l l e r  
+ 
