@@ -1,0 +1,30 @@
+appId: ${APP_ID}
+name: "2. A verified document is locked; Request change sends a reason"
+---
+# SELLER_EMAIL has verified KYC documents. Afterwards an admin approves the request in KYC and
+# Verification; the slot then reads "Change approved" and allows one replacement upload.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-documents
+- extendedWaitUntil:
+    visible:
+      id: screen-documents
+    timeout: 15000
+- assertVisible: "Verified"
+# Locked: no Remove.
+- assertNotVisible:
+    id: doc-PAN_CARD-remove
+- tapOn:
+    id: doc-PAN_CARD-change
+- tapOn:
+    id: change-reason
+- inputText: The name on the card was misspelt
+- tapOn:
+    id: change-send
+- extendedWaitUntil:
+    visible: "Change requested"
+    timeout: 15000

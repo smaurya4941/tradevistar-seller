@@ -1,0 +1,37 @@
+appId: ${APP_ID}
+name: "6. Add a business registration"
+---
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-business
+- extendedWaitUntil:
+    visible:
+      id: screen-business
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: business-registrations
+- tapOn:
+    id: business-registrations
+- extendedWaitUntil:
+    visible:
+      id: screen-registrations
+    timeout: 15000
+- tapOn:
+    id: reg-add
+- tapOn:
+    id: reg-type
+- tapOn: "FSSAI Licence"
+- tapOn:
+    id: reg-number
+- inputText: "12345678901234"
+- tapOn:
+    id: reg-save
+- extendedWaitUntil:
+    visible:
+      id: reg-FSSAI
+    timeout: 15000

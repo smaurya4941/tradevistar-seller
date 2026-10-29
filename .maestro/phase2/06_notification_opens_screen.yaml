@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+name: "6. Tapping a notification lands on the right screen"
+---
+# Needs an unread order notification for SELLER_EMAIL (a test order): ORDER_NOTIFICATION_TITLE.
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: tab-Inbox
+- extendedWaitUntil:
+    visible: ${ORDER_NOTIFICATION_TITLE}
+    timeout: 15000
+- tapOn: ${ORDER_NOTIFICATION_TITLE}
+# An order notification opens the Orders tab (the order opens there once Phase 7 ships).
+- extendedWaitUntil:
+    visible:
+      id: screen-orders
+    timeout: 10000

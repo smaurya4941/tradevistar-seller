@@ -1,0 +1,38 @@
+appId: ${APP_ID}
+name: "4. A notification created on the server shows up by itself, and opens"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+# An admin broadcast to sellers; nobody pulls to refresh.
+- runScript:
+    file: ../scripts/staff-api.js
+    env:
+      API_URL: ${API_URL}
+      ADMIN_IDENTIFIER: ${ADMIN_IDENTIFIER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACTION: broadcast
+      TITLE: Maestro live ${MAESTRO_RUN_ID}
+      MESSAGE: Sent by the end-to-end test
+# Within about five seconds the in-app banner appears and the bell counts it.
+- extendedWaitUntil:
+    visible:
+      id: arrival-banner
+    timeout: 12000
+- assertVisible: "Maestro live .*"
+- tapOn:
+    id: tab-Inbox
+- extendedWaitUntil:
+    visible: "Maestro live .*"
+    timeout: 8000
+# Tapping the row marks it read.
+- tapOn: "Maestro live .*"
+- assertVisible:
+    id: screen-inbox

@@ -1,6 +1,30 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!--
+      Firebase Analytics adds the advertising-ID permission by default. The app measures its own
+      usage only (no ads, no ad personalisation), so it is removed.
+    -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Android 13+: asked only when the seller turns notifications on (see PushPermissionHost). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!--
+      Profile picture from the camera (the crop screen). Asked at runtime, only when "Take photo" is
+      tapped. KYC documents use Google's document scanner, which needs no app permission. Nothing
+      here requires a camera: the app installs on phones without one.
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <!--
+      "Use my current location" on a business address. Asked at runtime, only when that button is
+      tapped; the position is read once and used to fill the address and set its pin.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
       android:name=".MainApplication"
@@ -8,19 +32,49 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
+      tools:replace="android:allowBackup"
+      android:fullBackupContent="false"
+      android:dataExtractionRules="@xml/data_extraction_rules"
       android:theme="@style/AppTheme"
-      android:usesCleartextTraffic="${usesCleartextTraffic}"
+      android:networkSecurityConfig="@xml/network_security_config"
       android:supportsRtl="true">
+      <!-- Google Maps SDK key for the address pin map (GOOGLE_MAPS_API_KEY in the flavor env file). -->
+      <meta-data android:name="com.google.android.geo.API_KEY" android:value="${mapsApiKey}" />
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
+        android:screenOrientation="portrait"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+
+        <!-- tradevistarseller://… links from emails, QR codes and other apps. -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="tradevistarseller" />
+        </intent-filter>
+
+        <!--
+          Android App Links for the seller web portal. Verification needs
+          /.well-known/assetlinks.json on the web host with the Play App Signing certificate's
+          SHA-256; until then Android offers a chooser instead. Paths are added with the screens.
+        -->
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+            <data android:host="${webHost}" />
+            <data android:pathPrefix="/seller" />
+            <!-- Public help and legal pages: /info/<slug>. -->
+            <data android:pathPrefix="/info" />
         </intent-filter>
       </activity>
     </application>

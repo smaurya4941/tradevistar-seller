@@ -1,0 +1,53 @@
+appId: ${APP_ID}
+name: "11. Two-factor sign-in on and off"
+---
+# TWO_FACTOR_SELLER_EMAIL has a verified email. Codes come from the backend log: TF_ON_CODE after
+# "Send code", TF_OFF_CODE after turning it off.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${TWO_FACTOR_SELLER_EMAIL}
+      PASSWORD: ${TWO_FACTOR_SELLER_PASSWORD}
+- tapOn:
+    id: hub-security
+- extendedWaitUntil:
+    visible:
+      id: screen-security
+    timeout: 15000
+- tapOn:
+    id: sec-two-factor
+- extendedWaitUntil:
+    visible:
+      id: screen-two-factor
+    timeout: 15000
+- tapOn:
+    id: tf-channel-EMAIL
+- tapOn:
+    id: tf-send
+- extendedWaitUntil:
+    visible:
+      id: tf-code-input
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: tf-code-input
+      CODE: ${TF_ON_CODE}
+- extendedWaitUntil:
+    visible: "Two-factor sign-in is on"
+    timeout: 15000
+- tapOn:
+    id: tf-off
+- tapOn: "Send code"
+- extendedWaitUntil:
+    visible:
+      id: tf-code-input
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: tf-code-input
+      CODE: ${TF_OFF_CODE}
+- extendedWaitUntil:
+    visible: "Two-factor sign-in is off"
+    timeout: 15000

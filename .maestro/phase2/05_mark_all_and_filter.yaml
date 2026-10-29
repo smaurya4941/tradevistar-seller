@@ -1,0 +1,49 @@
+appId: ${APP_ID}
+name: "5. Mark all read, and the category filter"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- runScript:
+    file: ../scripts/staff-api.js
+    env:
+      API_URL: ${API_URL}
+      ADMIN_IDENTIFIER: ${ADMIN_IDENTIFIER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACTION: broadcast
+      TITLE: Maestro filter ${MAESTRO_RUN_ID}
+      MESSAGE: Another one for the filter flow
+- tapOn:
+    id: tab-Inbox
+- extendedWaitUntil:
+    visible:
+      id: screen-inbox
+    timeout: 15000
+# Unread only.
+- tapOn:
+    id: inbox-unread-only
+- extendedWaitUntil:
+    visible: "Maestro filter .*"
+    timeout: 12000
+# A category chip narrows the list; Orders does not hold a broadcast.
+- tapOn:
+    id: inbox-tabs-orders
+- assertNotVisible: "Maestro filter .*"
+- tapOn:
+    id: inbox-tabs-all
+# Mark all read asks first.
+- tapOn:
+    id: inbox-mark-all
+- assertVisible: "Mark all as read?"
+- tapOn:
+    id: inbox-confirm-all-confirm
+- extendedWaitUntil:
+    visible: "No unread notifications"
+    timeout: 10000

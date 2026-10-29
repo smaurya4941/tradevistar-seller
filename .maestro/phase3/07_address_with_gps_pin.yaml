@@ -1,0 +1,56 @@
+appId: ${APP_ID}
+name: "7. Add an address with a GPS pin (mock location)"
+---
+# Set a mock location first, on the emulator:  adb emu geo fix 73.8567 18.5204
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-addresses
+- extendedWaitUntil:
+    visible:
+      id: screen-addresses
+    timeout: 15000
+- tapOn:
+    id: addr-add
+- extendedWaitUntil:
+    visible:
+      id: screen-address-form
+    timeout: 10000
+- tapOn:
+    id: addr-purpose
+- tapOn: "Pickup address"
+- tapOn:
+    id: addr-contact
+- inputText: Asha Patil
+- tapOn:
+    id: addr-phone
+- inputText: "9876543210"
+- tapOn:
+    id: addr-line1
+- inputText: 12 Park Street
+- tapOn:
+    id: addr-zip
+- inputText: "411001"
+- scrollUntilVisible:
+    element:
+      id: addr-use-location
+- tapOn:
+    id: addr-use-location
+# Allow the permission prompt when it appears.
+- tapOn:
+    text: "While using the app"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: addr-pin-notice
+    timeout: 20000
+- tapOn:
+    id: form-save
+- extendedWaitUntil:
+    visible:
+      id: screen-addresses
+    timeout: 20000
+- assertVisible: "Location captured on site"

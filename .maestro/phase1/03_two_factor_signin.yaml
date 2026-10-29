@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+name: "3. Password plus a second-factor code"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${TWO_FACTOR_EMAIL}
+      PASSWORD: ${TWO_FACTOR_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-two-factor
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: two-factor-input
+      CODE: ${TWO_FACTOR_CODE}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000

@@ -1,0 +1,9 @@
+appId: ${APP_ID}
+---
+# A fresh install: clearing app data drops the stored session and every preference.
+- clearState
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 20000

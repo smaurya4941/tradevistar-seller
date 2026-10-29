@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+name: "12. Offline: Home shows the saved figures with an Updated label"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${ANALYTICS_EMAIL}
+      PASSWORD: ${ANALYTICS_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: kpi-grid
+    timeout: 20000
+# Go offline and reopen: the saved copy appears, not an empty error.
+- setAirplaneMode: enabled
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: kpi-grid
+    timeout: 20000
+- assertVisible:
+    id: home-updated
+- assertVisible: "Offline copy.*updated.*"
+- setAirplaneMode: disabled

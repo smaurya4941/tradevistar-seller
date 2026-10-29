@@ -1,0 +1,48 @@
+appId: ${APP_ID}
+name: "9. Knowledge base: open an article and vote it helpful; announcements"
+---
+# Needs a published seller FAQ with the question FAQ_QUESTION and an announcement ANNOUNCEMENT_TITLE.
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: tab-More
+- tapOn:
+    id: more-support
+- extendedWaitUntil:
+    visible:
+      id: screen-support
+    timeout: 15000
+- tapOn:
+    id: support-segments-knowledge
+- extendedWaitUntil:
+    visible:
+      id: knowledge-base
+    timeout: 15000
+# Local search over question and answer text.
+- tapOn:
+    id: kb-search
+- inputText: ${FAQ_QUESTION}
+- hideKeyboard
+- assertVisible: ${FAQ_QUESTION}
+- tapOn: ${FAQ_QUESTION}
+- assertVisible: "Was this helpful?"
+- tapOn: "Yes"
+- assertVisible: "Thanks for your feedback."
+# The vote is remembered: close and reopen the article, the prompt does not come back.
+- tapOn: ${FAQ_QUESTION}
+- tapOn: ${FAQ_QUESTION}
+- assertNotVisible: "Was this helpful?"
+# Announcements.
+- tapOn:
+    id: support-segments-announcements
+- extendedWaitUntil:
+    visible: ${ANNOUNCEMENT_TITLE}
+    timeout: 10000

@@ -1,0 +1,9 @@
+appId: ${APP_ID}
+---
+# In the Android file picker: choose FILE (for example pan-card.pdf) from Downloads. The fixtures
+# in .maestro/fixtures are pushed there first:  adb push .maestro/fixtures/. /sdcard/Download/
+- extendedWaitUntil:
+    visible: "Downloads"
+    timeout: 10000
+- tapOn: "Downloads"
+- tapOn: ${FILE}

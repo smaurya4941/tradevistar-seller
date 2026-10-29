@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+---
+- tapOn:
+    id: tab-More
+- scrollUntilVisible:
+    element:
+      id: more-sign-out
+- tapOn:
+    id: more-sign-out
+- tapOn:
+    id: sign-out-dialog-confirm
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 15000

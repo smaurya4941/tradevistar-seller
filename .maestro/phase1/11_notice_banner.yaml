@@ -1,0 +1,19 @@
+appId: ${APP_ID}
+name: "11. A platform notice appears, expands and dismisses"
+---
+- runFlow: ../subflows/launch-clean.yaml
+# Notices are public, so the banner is there before anyone signs in.
+- extendedWaitUntil:
+    visible:
+      id: site-notice-banner
+    timeout: 20000
+- assertVisible: ${NOTICE_TITLE}
+- tapOn:
+    id: site-notice-open
+- assertVisible:
+    id: site-notice-sheet
+- tapOn: "Close"
+- tapOn:
+    id: site-notice-dismiss
+- assertNotVisible:
+    id: site-notice-banner

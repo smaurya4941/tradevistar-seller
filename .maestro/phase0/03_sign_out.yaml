@@ -1,0 +1,14 @@
+appId: ${APP_ID}
+name: "3. Log out, then a relaunch stays signed out"
+---
+# Runs on the install flow 2 left signed in.
+- launchApp
+- runFlow: ../subflows/signout.yaml
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 20000
+- assertNotVisible:
+    id: screen-home

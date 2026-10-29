@@ -1,0 +1,102 @@
+appId: ${APP_ID}
+name: "8. Support: create a ticket, staff reply, reply, close, rate"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: tab-More
+- tapOn:
+    id: more-support
+- extendedWaitUntil:
+    visible:
+      id: screen-support
+    timeout: 15000
+- tapOn:
+    id: support-new-ticket
+- tapOn:
+    id: ticket-category-ORDER
+- tapOn:
+    id: ticket-subject
+- inputText: Maestro ticket ${MAESTRO_RUN_ID}
+- tapOn:
+    id: ticket-message
+- inputText: This ticket was raised by the end-to-end test.
+- hideKeyboard
+- tapOn:
+    id: ticket-submit
+- extendedWaitUntil:
+    visible:
+      id: screen-ticket-thread
+    timeout: 15000
+- assertVisible: "This ticket was raised by the end-to-end test."
+# Staff replies from the helper script; the thread follows without a manual refresh.
+- runScript:
+    file: ../scripts/staff-api.js
+    env:
+      API_URL: ${API_URL}
+      ADMIN_IDENTIFIER: ${ADMIN_IDENTIFIER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACTION: find-ticket
+      SUBJECT: Maestro ticket ${MAESTRO_RUN_ID}
+- runScript:
+    file: ../scripts/staff-api.js
+    env:
+      API_URL: ${API_URL}
+      ADMIN_IDENTIFIER: ${ADMIN_IDENTIFIER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACTION: support-reply
+      TICKET_ID: ${output.ticketId}
+      MESSAGE: Thanks, we are looking into it.
+- extendedWaitUntil:
+    visible: "Thanks, we are looking into it."
+    timeout: 40000
+- assertVisible: "TradeVistar Support"
+# The seller replies.
+- tapOn:
+    id: thread-reply
+- inputText: Thank you, waiting for the update.
+- hideKeyboard
+- tapOn:
+    id: thread-send
+- extendedWaitUntil:
+    visible: "Thank you, waiting for the update."
+    timeout: 10000
+- assertVisible: "You"
+# Close, with a confirmation.
+- scrollUntilVisible:
+    element:
+      id: thread-close
+- tapOn:
+    id: thread-close
+- assertVisible: "Close this ticket?"
+- tapOn:
+    id: thread-close-dialog-confirm
+- extendedWaitUntil:
+    visible:
+      id: thread-closed-note
+    timeout: 10000
+# Rate: stars and a comment.
+- scrollUntilVisible:
+    element:
+      id: rate-form
+- tapOn:
+    id: rate-stars-5
+- tapOn:
+    id: rate-comment
+- inputText: Quick and helpful
+- hideKeyboard
+- tapOn:
+    id: rate-submit
+- extendedWaitUntil:
+    visible:
+      id: rate-given
+    timeout: 10000
+- assertVisible: "You rated 5 of 5"

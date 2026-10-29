@@ -73,3 +73,19 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Environment files hold per-flavor endpoints and keys; only the example is committed.
+.env
+.env.*
+!.env.example
+
+# Firebase per-flavor configuration and signing material stay out of the repository.
+android/app/google-services.json
+android/app/src/*/google-services.json
+ios/GoogleService-Info.plist
+*.jks
+*.keystore
+!debug.keystore
+
+# Maestro secrets
+.maestro/staging.env

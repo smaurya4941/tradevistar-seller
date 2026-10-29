@@ -1,0 +1,19 @@
+appId: ${APP_ID}
+---
+# From a clean install: sign in as EMAIL / PASSWORD and open the profile hub from the Home avatar.
+- runFlow: launch-clean.yaml
+- runFlow:
+    file: signin-as.yaml
+    env:
+      EMAIL: ${EMAIL}
+      PASSWORD: ${PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: home-profile
+- extendedWaitUntil:
+    visible:
+      id: screen-profile-hub
+    timeout: 15000

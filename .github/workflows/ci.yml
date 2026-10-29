@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # The Maestro run needs a staging seller account, so it is started by hand.
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test -- --ci
+
+  android-dev-apk:
+    name: Build dev debug APK (optional)
+    needs: verify
+    runs-on: ubuntu-latest
+    # A failing APK build is reported but never blocks a merge.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Environment for the dev flavor
+        run: cp .env.example .env.development
+      - name: Firebase config (optional)
+        env:
+          GOOGLE_SERVICES_DEV: ${{ secrets.GOOGLE_SERVICES_DEV_JSON }}
+        if: ${{ env.GOOGLE_SERVICES_DEV != '' }}
+        run: |
+          mkdir -p android/app/src/dev
+          echo "$GOOGLE_SERVICES_DEV" > android/app/src/dev/google-services.json
+      - name: Assemble
+        working-directory: android
+        run: ./gradlew assembleDevDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tradevistar-seller-dev-debug
+          path: android/app/build/outputs/apk/dev/debug/*.apk
+          if-no-files-found: error
+
+  e2e-staging:
+    name: Maestro flows (staging, emulator)
+    if: github.event_name == 'workflow_dispatch'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Environment for the staging flavor
+        env:
+          STAGING_ENV: ${{ secrets.STAGING_ENV_FILE }}
+        run: echo "$STAGING_ENV" > .env.staging
+      - name: Assemble staging (debug-signed)
+        working-directory: android
+        run: ./gradlew assembleStagingDebug --no-daemon
+      - name: Install Maestro
+        run: curl -fsSL https://get.maestro.mobile.dev | bash
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run flows on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          MAESTRO_ENV: ${{ secrets.MAESTRO_STAGING_ENV }}
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          script: |
+            adb install android/app/build/outputs/apk/staging/debug/*.apk
+            echo "$MAESTRO_ENV" > .maestro/staging.env
+            $HOME/.maestro/bin/maestro test .maestro/phase0 --env-file .maestro/staging.env --format junit --output maestro-report.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-report
+          path: maestro-report.xml

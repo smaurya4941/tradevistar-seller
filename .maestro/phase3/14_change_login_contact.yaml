@@ -1,0 +1,34 @@
+appId: ${APP_ID}
+name: "14. Change the login email with a code"
+---
+# CONTACT_SELLER_EMAIL changes to NEW_LOGIN_EMAIL; the code is read from the backend log (CONTACT_CODE).
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${CONTACT_SELLER_EMAIL}
+      PASSWORD: ${CONTACT_SELLER_PASSWORD}
+- tapOn:
+    id: hub-security
+- tapOn:
+    id: sec-contact
+- extendedWaitUntil:
+    visible:
+      id: screen-contact-change
+    timeout: 15000
+- tapOn:
+    id: contact-new
+- inputText: ${NEW_LOGIN_EMAIL}
+- tapOn:
+    id: contact-send
+- extendedWaitUntil:
+    visible:
+      id: contact-code-input
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: contact-code-input
+      CODE: ${CONTACT_CODE}
+- extendedWaitUntil:
+    visible: "Your sign-in contact was updated.*"
+    timeout: 20000

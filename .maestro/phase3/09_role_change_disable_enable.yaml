@@ -1,0 +1,44 @@
+appId: ${APP_ID}
+name: "9. Change a role, disable and enable a member"
+---
+# SELLER_EMAIL is the owner; the team already has one other active member.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-team
+- extendedWaitUntil:
+    visible:
+      id: screen-team
+    timeout: 15000
+- tapOn:
+    id: member-.*-manage
+    index: 1
+- tapOn:
+    id: member-edit-role
+- tapOn: "Sales manager"
+- tapOn:
+    id: member-role-save
+- extendedWaitUntil:
+    visible: "Role updated"
+    timeout: 15000
+- tapOn:
+    id: member-.*-manage
+    index: 1
+- tapOn:
+    id: member-disable
+- tapOn: "Disable"
+- extendedWaitUntil:
+    visible: "Member disabled"
+    timeout: 15000
+- tapOn:
+    id: member-.*-manage
+    index: 1
+- tapOn:
+    id: member-enable
+- tapOn: "Enable"
+- extendedWaitUntil:
+    visible: "Member enabled"
+    timeout: 15000

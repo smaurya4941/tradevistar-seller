@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+name: "7. Notification preferences: a switch saves, a locked row stays on, Push asks for permission"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: tab-Inbox
+- tapOn:
+    id: inbox-settings
+- extendedWaitUntil:
+    visible:
+      id: screen-notification-settings
+    timeout: 15000
+- assertVisible: "SMS choices are saved, but SMS alerts are not sent yet.*"
+# A normal switch saves, with a spinner while it does.
+- scrollUntilVisible:
+    element:
+      id: switch-ORDERS-SMS
+- tapOn:
+    id: switch-ORDERS-SMS
+- extendedWaitUntil:
+    notVisible:
+      id: pref-spinner-ORDERS-SMS
+    timeout: 8000
+# A locked row cannot be switched off.
+- scrollUntilVisible:
+    element:
+      id: pref-SECURITY-EMAIL
+- assertVisible: "Always on"
+- tapOn:
+    id: switch-SECURITY-EMAIL
+- assertVisible:
+    id: pref-SECURITY-EMAIL
+# Turning Push on starts the permission flow: our explainer first, then the system prompt.
+- scrollUntilVisible:
+    element:
+      id: switch-ORDERS-PUSH
+- tapOn:
+    id: switch-ORDERS-PUSH
+- extendedWaitUntil:
+    visible:
+      id: push-explainer
+    timeout: 8000
+- tapOn:
+    id: push-explainer-allow
+- runFlow:
+    when:
+      visible: "Allow"
+    commands:
+      - tapOn: "Allow"

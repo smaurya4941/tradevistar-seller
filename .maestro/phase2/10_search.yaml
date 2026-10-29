@@ -1,0 +1,44 @@
+appId: ${APP_ID}
+name: "10. Search the seller's own records and open a result"
+---
+# SEARCH_TERM (at least 3 characters) matches one order of SELLER_EMAIL; ORDER_NUMBER is its number.
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- tapOn:
+    id: home-search
+- extendedWaitUntil:
+    visible:
+      id: search-input
+    timeout: 10000
+# One character does nothing; more search.
+- inputText: z
+- assertVisible: "Type at least 2 characters."
+- eraseText
+- inputText: ${SEARCH_TERM}
+- extendedWaitUntil:
+    visible: ${ORDER_NUMBER}
+    timeout: 12000
+- assertVisible: "Order"
+- tapOn: ${ORDER_NUMBER}
+# Orders opens with the record kept in its parameters.
+- extendedWaitUntil:
+    visible:
+      id: screen-orders
+    timeout: 10000
+# No results reads clearly.
+- tapOn:
+    id: tab-Home
+- tapOn:
+    id: home-search
+- inputText: zzqqxxnotfound
+- extendedWaitUntil:
+    visible: "No results for .*"
+    timeout: 12000

@@ -1,0 +1,23 @@
+appId: ${APP_ID}
+name: "5. A rejected seller sees the reason the admin gave"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${REJECTED_EMAIL}
+      PASSWORD: ${REJECTED_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-approval-rejected
+    timeout: 15000
+- assertVisible: ".*${REJECTED_REASON}.*"
+# No way to re-register with the same details from here.
+- assertNotVisible:
+    id: approval-retry
+- tapOn:
+    id: approval-other
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 10000

@@ -1,0 +1,48 @@
+appId: ${APP_ID}
+name: "5. Add a bank account with live checks and use it for settlements"
+---
+# The verification stub accepts BANK_IFSC with BANK_ACCOUNT and rejects any other account.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-bank
+- extendedWaitUntil:
+    visible:
+      id: screen-bank
+    timeout: 15000
+- tapOn:
+    id: bank-add
+- tapOn:
+    id: bank-holder
+- inputText: Maestro Traders
+- tapOn:
+    id: bank-ifsc
+- inputText: ${BANK_IFSC}
+- extendedWaitUntil:
+    visible: "IFSC Verified"
+    timeout: 10000
+- tapOn:
+    id: bank-number
+- inputText: ${BANK_ACCOUNT}
+- tapOn:
+    id: bank-number-confirm
+- inputText: ${BANK_ACCOUNT}
+- hideKeyboard
+- extendedWaitUntil:
+    visible: "Bank Account Verified"
+    timeout: 10000
+- tapOn:
+    id: form-save
+- extendedWaitUntil:
+    visible:
+      id: screen-bank
+    timeout: 20000
+- assertVisible: "Verified"
+- tapOn:
+    id: bank-.*-primary
+- extendedWaitUntil:
+    visible: "Settlement account"
+    timeout: 15000

@@ -1,0 +1,77 @@
+appId: ${APP_ID}
+name: "1. Upload the three KYC documents; the banner follows"
+---
+# UNVERIFIED_EMAIL: an approved seller with no KYC documents yet (KYC none).
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${UNVERIFIED_EMAIL}
+      PASSWORD: ${UNVERIFIED_PASSWORD}
+- tapOn:
+    id: hub-documents
+- extendedWaitUntil:
+    visible:
+      id: screen-documents
+    timeout: 15000
+- assertVisible:
+    id: kyc-required-banner
+- tapOn:
+    id: doc-GST_CERTIFICATE-upload
+- extendedWaitUntil:
+    visible:
+      id: screen-document-upload
+    timeout: 10000
+- tapOn:
+    id: source-files
+- runFlow:
+    file: ../subflows/pick-fixture.yaml
+    env:
+      FILE: gst-certificate.pdf
+- tapOn:
+    id: upload-submit
+- extendedWaitUntil:
+    visible:
+      id: screen-documents
+    timeout: 30000
+- tapOn:
+    id: doc-PAN_CARD-upload
+- extendedWaitUntil:
+    visible:
+      id: screen-document-upload
+    timeout: 10000
+- tapOn:
+    id: source-files
+- runFlow:
+    file: ../subflows/pick-fixture.yaml
+    env:
+      FILE: pan-card.pdf
+- tapOn:
+    id: upload-submit
+- extendedWaitUntil:
+    visible:
+      id: screen-documents
+    timeout: 30000
+- tapOn:
+    id: doc-AADHAAR_CARD-upload
+- extendedWaitUntil:
+    visible:
+      id: screen-document-upload
+    timeout: 10000
+- tapOn:
+    id: source-files
+- runFlow:
+    file: ../subflows/pick-fixture.yaml
+    env:
+      FILE: aadhaar-card.pdf
+- tapOn:
+    id: upload-submit
+- extendedWaitUntil:
+    visible:
+      id: screen-documents
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: kyc-complete-banner
+    timeout: 30000
+# The server submitted the case by itself: there is no submit button.
+- assertNotVisible: "Submit for review"

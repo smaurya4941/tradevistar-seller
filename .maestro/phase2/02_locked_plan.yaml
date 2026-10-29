@@ -1,0 +1,34 @@
+appId: ${APP_ID}
+name: "2. A plan without Insights & Analytics hides the Home charts and locks Analytics"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${FREE_EMAIL}
+      PASSWORD: ${FREE_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: kpi-grid
+    timeout: 20000
+# No chart section; a small card points to the plans instead.
+- assertNotVisible:
+    id: analytics-section
+- scrollUntilVisible:
+    element:
+      id: analytics-locked-card
+# The Analytics screen says it is not in the plan.
+- tapOn:
+    id: tab-More
+- tapOn:
+    id: more-analytics
+- extendedWaitUntil:
+    visible:
+      id: analytics-locked
+    timeout: 15000
+- assertVisible: "Insights & Analytics is not in your plan"
+- assertVisible: "View plans"

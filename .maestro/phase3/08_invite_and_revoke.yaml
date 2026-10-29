@@ -1,0 +1,41 @@
+appId: ${APP_ID}
+name: "8. Invite a team member, see the link, revoke the invitation"
+---
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-team
+- extendedWaitUntil:
+    visible:
+      id: screen-team
+    timeout: 15000
+- tapOn:
+    id: team-invite
+- tapOn:
+    id: invite-email
+- inputText: ${TEAM_INVITEE_EMAIL}
+- tapOn:
+    id: invite-role-VIEWER
+- tapOn:
+    id: form-save
+# The link is shown once, with the share and copy buttons.
+- extendedWaitUntil:
+    visible:
+      id: invite-link
+    timeout: 20000
+- assertVisible:
+    id: invite-share
+- tapOn: "Done"
+- extendedWaitUntil:
+    visible:
+      id: screen-team
+    timeout: 10000
+- tapOn:
+    id: invite-.*-revoke
+- tapOn: "Revoke"
+- extendedWaitUntil:
+    visible: "Invitation revoked"
+    timeout: 15000

@@ -1,0 +1,52 @@
+appId: ${APP_ID}
+name: "11. Help and about, and the contact form, work signed out"
+---
+# HELP_PAGE_SLUG is a footer page with the contact form switched on (help-support by default).
+- runFlow: ../subflows/launch-clean.yaml
+- tapOn:
+    id: sign-in-need-help
+- extendedWaitUntil:
+    visible:
+      id: screen-help-about
+    timeout: 15000
+- assertVisible: "Need help?"
+- extendedWaitUntil:
+    visible:
+      id: footer-legal
+    timeout: 15000
+# Legal pages open without signing in.
+- tapOn:
+    id: info-link-terms-of-use
+- extendedWaitUntil:
+    visible:
+      id: info-page
+    timeout: 15000
+- assertVisible: "Last updated .*"
+- back
+# The contact form.
+- tapOn:
+    id: info-link-${HELP_PAGE_SLUG}
+- extendedWaitUntil:
+    visible:
+      id: enquiry-form
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: enquiry-name
+- tapOn:
+    id: enquiry-name
+- inputText: Maestro Tester
+- tapOn:
+    id: enquiry-email
+- inputText: maestro@example.com
+- tapOn:
+    id: enquiry-message
+- inputText: This message was sent by the end-to-end test.
+- hideKeyboard
+- tapOn:
+    id: enquiry-send
+- extendedWaitUntil:
+    visible:
+      id: enquiry-sent
+    timeout: 15000
+- assertVisible: "Thank you. Your message has been sent."

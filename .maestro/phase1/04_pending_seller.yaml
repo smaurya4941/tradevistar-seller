@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+name: "4. A seller still awaiting approval sees the pending screen"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${PENDING_EMAIL}
+      PASSWORD: ${PENDING_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-approval-pending
+    timeout: 15000
+- assertVisible:
+    id: approval-support
+# Not stored: a relaunch starts at sign-in.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 20000

@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+---
+# The six code boxes share one hidden input; typing fills them and the sixth digit submits.
+# Needs INPUT_ID (the input's testID) and CODE.
+- tapOn:
+    id: ${INPUT_ID}
+- inputText: ${CODE}

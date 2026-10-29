@@ -1,0 +1,13 @@
+appId: ${APP_ID}
+---
+# From the sign-in screen: sign in with a password. Needs EMAIL and PASSWORD (set with env:).
+- tapOn:
+    id: sign-in-identifier
+- eraseText
+- inputText: ${EMAIL}
+- tapOn:
+    id: sign-in-password
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: sign-in-submit

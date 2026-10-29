@@ -1,0 +1,32 @@
+appId: ${APP_ID}
+name: "12. Sign out other devices"
+---
+# A second session is created through the API first (scripts/second-session.js).
+- runScript:
+    file: ../scripts/second-session.js
+    env:
+      API_URL: ${API_URL}
+      SELLER_EMAIL: ${SELLER_EMAIL}
+      SELLER_PASSWORD: ${SELLER_PASSWORD}
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-security
+- tapOn:
+    id: sec-sessions
+- extendedWaitUntil:
+    visible:
+      id: screen-sessions
+    timeout: 15000
+- assertVisible: "This device"
+- tapOn:
+    id: sessions-signout-others
+- tapOn: "Sign out other devices"
+- extendedWaitUntil:
+    visible: ".* other device.* signed out"
+    timeout: 15000
+- assertNotVisible:
+    id: sessions-signout-others

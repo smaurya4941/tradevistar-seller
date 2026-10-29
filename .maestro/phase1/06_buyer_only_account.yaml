@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+name: "6. A buyer-only account is told it has no seller access"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${BUYER_ONLY_EMAIL}
+      PASSWORD: ${BUYER_ONLY_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: sign-in-error
+    timeout: 15000
+- assertVisible: ".*no seller access.*"
+- assertVisible:
+    id: auth-error-create
+- assertNotVisible:
+    id: screen-home

@@ -1,0 +1,29 @@
+appId: ${APP_ID}
+name: "9. An invitation link opened while signed out is accepted after sign-in"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- openLink: tradevistarseller://invitations/accept?token=${INVITE_TOKEN}
+- extendedWaitUntil:
+    visible:
+      id: invite-signed-out
+    timeout: 15000
+- tapOn:
+    id: invite-sign-in
+- assertVisible:
+    id: sign-in-invitation
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${INVITEE_EMAIL}
+      PASSWORD: ${INVITEE_PASSWORD}
+# Signing in brings the seller back to the invitation.
+- extendedWaitUntil:
+    visible:
+      id: invite-join
+    timeout: 20000
+- tapOn:
+    id: invite-accept
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000

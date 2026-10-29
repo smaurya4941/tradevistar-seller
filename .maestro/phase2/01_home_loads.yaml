@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+name: "1. Home shows the seeded seller's figures, each card on its own"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${ANALYTICS_EMAIL}
+      PASSWORD: ${ANALYTICS_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+# The greeting names the business, never the login email.
+- assertVisible: "Welcome, .*"
+- assertNotVisible: ${ANALYTICS_EMAIL}
+# The order-state strip: all eight states.
+- extendedWaitUntil:
+    visible:
+      id: status-strip
+    timeout: 15000
+- assertVisible: "Pending"
+- assertVisible: "Ready to Ship"
+- assertVisible: "Packaging"
+- assertVisible: "Out for Delivery"
+- scrollUntilVisible:
+    element:
+      id: status-chip-FAILED_TO_DELIVER
+    direction: RIGHT
+    centerElement: true
+- assertVisible: "Failed to Deliver"
+# The wallet.
+- extendedWaitUntil:
+    visible:
+      id: wallet-card
+    timeout: 15000
+- assertVisible: "Withdrawable balance"
+# The eight key figures and the lists load further down.
+- scrollUntilVisible:
+    element:
+      id: kpi-grid
+- assertVisible:
+    id: kpi-revenue
+- scrollUntilVisible:
+    element:
+      id: recent-orders
+- scrollUntilVisible:
+    element:
+      id: inquiry-center
+- scrollUntilVisible:
+    element:
+      id: shipment-tracking
+# Pull to refresh keeps the screen intact.
+- swipe:
+    direction: DOWN
+    duration: 600
+- assertVisible:
+    id: screen-home

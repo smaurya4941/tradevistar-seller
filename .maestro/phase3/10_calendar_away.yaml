@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+name: "10. Calendar: set away, see it, welcome back"
+---
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${SELLER_EMAIL}
+      PASSWORD: ${SELLER_PASSWORD}
+- tapOn:
+    id: hub-calendar
+- extendedWaitUntil:
+    visible:
+      id: screen-calendar
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: cal-away-until
+- tapOn:
+    id: cal-away-until
+# "+1 week" is a shortcut under the field; the minimum date is today in the seller timezone.
+- tapOn: "+1 week"
+- tapOn:
+    id: cal-set-away
+- extendedWaitUntil:
+    visible:
+      id: cal-away-active
+    timeout: 15000
+- tapOn:
+    id: cal-welcome-back
+- extendedWaitUntil:
+    visible:
+      id: cal-set-away
+    timeout: 15000

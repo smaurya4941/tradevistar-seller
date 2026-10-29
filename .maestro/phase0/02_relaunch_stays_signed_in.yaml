@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+name: "2. Force-stop and relaunch, still signed in"
+---
+# Runs on the install flow 1 left signed in.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- assertNotVisible:
+    id: screen-sign-in

@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+name: "3. Analytics: charts, the 3/6/12 month selector and CSV export"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${ANALYTICS_EMAIL}
+      PASSWORD: ${ANALYTICS_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: analytics-see-all
+- tapOn:
+    id: analytics-see-all
+- extendedWaitUntil:
+    visible:
+      id: analytics-screen
+    timeout: 20000
+- assertVisible:
+    id: metric-revenue
+- assertVisible:
+    id: metric-conversion
+# The honest label for the change figures.
+- assertVisible: ".*earlier half of period.*"
+# Charts: a tap on a bar shows its value.
+- scrollUntilVisible:
+    element:
+      id: chart-sales
+- assertVisible: "Tap a bar for its value"
+- tapOn:
+    id: chart-hit-0
+- assertNotVisible: "Tap a bar for its value"
+- scrollUntilVisible:
+    element: "Based on your first 100 products and quotes."
+# Period change.
+- scrollUntilVisible:
+    element:
+      id: analytics-period
+    direction: UP
+- tapOn:
+    id: analytics-period-3
+- assertVisible:
+    id: analytics-screen
+- tapOn:
+    id: analytics-period-12
+- assertVisible:
+    id: analytics-screen
+# Export opens the share sheet.
+- tapOn:
+    id: analytics-export
+- extendedWaitUntil:
+    visible: ".*(Share|Save|Drive|Gmail|Bluetooth|Copy).*"
+    timeout: 10000
+- back

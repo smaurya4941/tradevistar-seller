@@ -1,0 +1,27 @@
+appId: ${APP_ID}
+name: "10. An unverified seller sees the view-only banner"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow:
+    file: ../subflows/signin-as.yaml
+    env:
+      EMAIL: ${UNVERIFIED_EMAIL}
+      PASSWORD: ${UNVERIFIED_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: view-only-banner
+    timeout: 10000
+- assertVisible: ".*awaiting verification.*"
+# The banner stays on every tab.
+- tapOn:
+    id: tab-Orders
+- assertVisible:
+    id: view-only-banner
+# "Complete verification" opens the documents area.
+- tapOn: "Complete verification"
+- assertNotVisible:
+    id: screen-home

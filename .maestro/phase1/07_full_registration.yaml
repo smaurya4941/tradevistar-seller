@@ -1,0 +1,82 @@
+appId: ${APP_ID}
+name: "7. Register a new seller and land on the submitted screen"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- tapOn:
+    id: sign-in-register
+# Step 1: mobile.
+- tapOn:
+    id: register-mobile-field
+- inputText: ${NEW_MOBILE}
+- hideKeyboard
+- tapOn:
+    id: register-mobile-send
+- extendedWaitUntil:
+    visible:
+      id: register-mobile-code-input
+    timeout: 10000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: register-mobile-code-input
+      CODE: ${OTP_CODE_MOBILE}
+- extendedWaitUntil:
+    visible: "Verified"
+    timeout: 10000
+- tapOn:
+    id: register-mobile-continue
+# Step 2: email.
+- tapOn:
+    id: register-email-field
+- inputText: ${NEW_EMAIL}
+- hideKeyboard
+- tapOn:
+    id: register-email-send
+- extendedWaitUntil:
+    visible:
+      id: register-email-code-input
+    timeout: 10000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: register-email-code-input
+      CODE: ${OTP_CODE_EMAIL}
+- extendedWaitUntil:
+    visible: "Verified"
+    timeout: 10000
+- tapOn:
+    id: register-email-continue
+# Step 3: password (a brand new account has none).
+- tapOn:
+    id: register-password
+- inputText: ${NEW_PASSWORD}
+- tapOn:
+    id: register-confirm
+- inputText: ${NEW_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: register-password-continue
+# Step 4: business.
+- tapOn:
+    id: register-company
+- inputText: ${NEW_COMPANY}
+- tapOn:
+    id: register-gstin
+- inputText: ${NEW_GSTIN}
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: register-submit
+- tapOn:
+    id: register-submit
+- extendedWaitUntil:
+    visible:
+      id: screen-register-submitted
+    timeout: 20000
+# No session was created: the button goes back to sign-in.
+- tapOn:
+    id: register-submitted-done
+- extendedWaitUntil:
+    visible:
+      id: screen-sign-in
+    timeout: 10000

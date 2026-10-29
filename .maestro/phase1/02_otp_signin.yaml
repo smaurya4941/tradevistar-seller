@@ -1,0 +1,26 @@
+appId: ${APP_ID}
+name: "2. Sign in with a one-time code"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- tapOn:
+    id: sign-in-otp-link
+- tapOn:
+    id: otp-identifier
+- inputText: ${SELLER_MOBILE}
+- hideKeyboard
+- tapOn:
+    id: otp-send
+# The runner reads the code from the backend log (OTP_CODE) and types it into the six boxes.
+- extendedWaitUntil:
+    visible:
+      id: otp-login-input
+    timeout: 10000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: otp-login-input
+      CODE: ${OTP_CODE}
+- extendedWaitUntil:
+    visible:
+      id: screen-home
+    timeout: 20000

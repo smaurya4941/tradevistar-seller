@@ -1,0 +1,44 @@
+appId: ${APP_ID}
+name: "3. GST ownership: both codes confirm the GSTIN"
+---
+# GST_OTP_EMAIL: a seller whose GSTIN is saved and whose registry stub returns contacts. The two
+# codes are read from the backend console log: GST_EMAIL_CODE and GST_MOBILE_CODE.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${GST_OTP_EMAIL}
+      PASSWORD: ${GST_OTP_PASSWORD}
+- tapOn:
+    id: hub-tax
+- extendedWaitUntil:
+    visible:
+      id: screen-tax-gst
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: gst-send
+- tapOn:
+    id: gst-send
+- extendedWaitUntil:
+    visible:
+      id: gst-email-code-input
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: gst-email-code-input
+      CODE: ${GST_EMAIL_CODE}
+# One channel at a time: the email is confirmed while the mobile still waits.
+- extendedWaitUntil:
+    visible:
+      id: gst-email-done
+    timeout: 15000
+- runFlow:
+    file: ../subflows/enter-code.yaml
+    env:
+      INPUT_ID: gst-mobile-code-input
+      CODE: ${GST_MOBILE_CODE}
+- extendedWaitUntil:
+    visible:
+      id: gst-verified
+    timeout: 20000

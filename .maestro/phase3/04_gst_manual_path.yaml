@@ -1,0 +1,29 @@
+appId: ${APP_ID}
+name: "4. GST manual path: upload the certificate when OTP is not possible"
+---
+# GST_MANUAL_EMAIL: a seller whose GSTIN has no usable registered contacts (the stub returns none).
+- runFlow:
+    file: ../subflows/open-profile.yaml
+    env:
+      EMAIL: ${GST_MANUAL_EMAIL}
+      PASSWORD: ${GST_MANUAL_PASSWORD}
+- tapOn:
+    id: hub-tax
+- extendedWaitUntil:
+    visible:
+      id: screen-tax-gst
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: gst-manual
+- tapOn:
+    id: gst-manual-pick
+- runFlow:
+    file: ../subflows/pick-fixture.yaml
+    env:
+      FILE: gst-certificate.pdf
+- tapOn:
+    id: gst-manual-submit
+- extendedWaitUntil:
+    visible: "Under review"
+    timeout: 30000

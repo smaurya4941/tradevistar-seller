@@ -1,0 +1,19 @@
+# Maestro workspace for the end-to-end flows (Android emulator or phone against staging).
+#   maestro test .maestro/phase0 --env-file .maestro/staging.env
+#   maestro test .maestro/phase1 --env-file .maestro/staging.env
+#   maestro test .maestro/phase2 --env-file .maestro/staging.env
+#   maestro test .maestro/phase3 --env-file .maestro/staging.env
+# Phase 0: the flows share one install and must run in order: 1 signs in, 2 relaunches that
+# install, 3 signs out.
+# Phase 1: every flow starts from a clean install (clearState).
+# Phase 2: the same; flows 4, 5 and 8 also call scripts/staff-api.js (an admin broadcast, a ticket
+# reply), so they need API_URL and a staff account (see staging.env.example).
+# Phase 3: the same. The upload flows pick PDFs from Downloads (adb push .maestro/fixtures/. /sdcard/Download/);
+# the document scanner, the avatar camera and the map drag need a camera or touch and are checked by hand.
+flows:
+  - phase0/*
+  - phase1/*
+  - phase2/*
+  - phase3/*
+executionOrder:
+  continueOnFailure: false

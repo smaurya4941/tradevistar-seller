@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+name: "1. Sign in with a password and see Home"
+---
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow: ../subflows/password-signin.yaml
+- assertVisible:
+    id: screen-home
+- assertNotVisible:
+    id: screen-sign-in
+# The five tabs of the shell.
+- assertVisible:
+    id: tab-Orders
+- assertVisible:
+    id: tab-Products
+- assertVisible:
+    id: tab-Inbox
+- assertVisible:
+    id: tab-More
